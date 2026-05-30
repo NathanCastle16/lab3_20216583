@@ -1,0 +1,45 @@
+package com.example.lab6.beans;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+public class Employee {
+
+    private int employeeId;
+    private String fullNameEmployee;
+    private String email;
+    private String phoneNumber;
+    private LocalDate hireDate;
+    private String jobId;
+    private String jobTitle;
+    private BigDecimal salary;
+    private BigDecimal commissionPct;
+    private Integer managerId;
+    private Integer departmentId;
+
+    public int getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(int employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public String getFullNameEmployee() {
+        return fullNameEmployee;
+    }
+
+    public void setFullNameEmployee(String fullNameEmployee) {
+        this.fullNameEmployee = fullNameEmployee;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    // Completa los demás getters y setters
+}
