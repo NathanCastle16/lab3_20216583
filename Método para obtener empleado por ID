@@ -1,0 +1,50 @@
+public Employee obtenerEmployeePorId(int id) {
+    Employee emp = null;
+
+    String sql = """
+        SELECT 
+            e.employee_id,
+            CONCAT(e.first_name, ' ', e.last_name) AS full_name,
+            e.email,
+            e.phone_number,
+            e.hire_date,
+            e.job_id,
+            j.job_title,
+            e.salary,
+            e.commission_pct,
+            e.manager_id,
+            e.department_id
+        FROM employees e
+        INNER JOIN jobs j ON e.job_id = j.job_id
+        WHERE e.employee_id = ?
+    """;
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, id);
+
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                emp = new Employee();
+
+                emp.setEmployeeId(rs.getInt("employee_id"));
+                emp.setFullNameEmployee(rs.getString("full_name"));
+                emp.setEmail(rs.getString("email"));
+                emp.setPhoneNumber(rs.getString("phone_number"));
+                emp.setHireDate(rs.getDate("hire_date").toLocalDate());
+                emp.setJobId(rs.getString("job_id"));
+                emp.setJobTitle(rs.getString("job_title"));
+                emp.setSalary(rs.getBigDecimal("salary"));
+                emp.setCommissionPct(rs.getBigDecimal("commission_pct"));
+                emp.setManagerId((Integer) rs.getObject("manager_id"));
+                emp.setDepartmentId((Integer) rs.getObject("department_id"));
+            }
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return emp;
+}
