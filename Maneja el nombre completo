@@ -1,0 +1,12 @@
+private String[] separarNombre(String fullName) {
+    String[] partes = fullName.trim().split(" ");
+
+    String lastName = partes[partes.length - 1];
+    String firstName = "";
+
+    if (partes.length > 1) {
+        firstName = fullName.substring(0, fullName.lastIndexOf(" "));
+    }
+
+    return new String[]{firstName, lastName};
+}
