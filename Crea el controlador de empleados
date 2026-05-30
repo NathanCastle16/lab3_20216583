@@ -1,0 +1,72 @@
+@WebServlet(name = "EmployeeServlet", urlPatterns = {"/employee/*"})
+public class EmployeeServlet extends HttpServlet {
+
+    private DaoEmployee daoEmployee = new DaoEmployee();
+    private DaoJobs daoJobs = new DaoJobs();
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String path = request.getPathInfo();
+
+        if (path == null || path.equals("/create")) {
+            request.setAttribute("listaJobs", daoJobs.listarJobs());
+            request.getRequestDispatcher("/WEB-INF/views/employeeForm.jsp").forward(request, response);
+
+        } else if (path.equals("/edit")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            request.setAttribute("employee", daoEmployee.obtenerEmployeePorId(id));
+            request.setAttribute("listaJobs", daoJobs.listarJobs());
+
+            request.getRequestDispatcher("/WEB-INF/views/employeeForm.jsp").forward(request, response);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String path = request.getPathInfo();
+
+        if (path.equals("/save")) {
+            Employee emp = new Employee();
+
+            String id = request.getParameter("employeeId");
+
+            emp.setFullNameEmployee(request.getParameter("fullNameEmployee"));
+            emp.setEmail(request.getParameter("email"));
+            emp.setPhoneNumber(request.getParameter("phoneNumber"));
+            emp.setHireDate(LocalDate.parse(request.getParameter("hireDate")));
+            emp.setJobId(request.getParameter("jobId"));
+            emp.setSalary(new BigDecimal(request.getParameter("salary")));
+
+            if (request.getParameter("commissionPct") != null && !request.getParameter("commissionPct").isBlank()) {
+                emp.setCommissionPct(new BigDecimal(request.getParameter("commissionPct")));
+            }
+
+            if (request.getParameter("managerId") != null && !request.getParameter("managerId").isBlank()) {
+                emp.setManagerId(Integer.parseInt(request.getParameter("managerId")));
+            }
+
+            if (request.getParameter("departmentId") != null && !request.getParameter("departmentId").isBlank()) {
+                emp.setDepartmentId(Integer.parseInt(request.getParameter("departmentId")));
+            }
+
+            if (id == null || id.isBlank()) {
+                daoEmployee.crearEmployee(emp);
+            } else {
+                emp.setEmployeeId(Integer.parseInt(id));
+                daoEmployee.actualizarEmployee(emp);
+            }
+
+            response.sendRedirect(request.getContextPath() + "/home");
+
+        } else if (path.equals("/delete")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            daoEmployee.borrarEmployee(id);
+            response.sendRedirect(request.getContextPath() + "/home");
+        }
+    }
+}
