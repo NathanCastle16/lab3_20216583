@@ -1,0 +1,80 @@
+package com.example.lab6.daos;
+
+import com.example.lab6.beans.Job;
+import com.example.lab6.config.DBConnection;
+
+import java.sql.*;
+import java.util.ArrayList;
+
+public class DaoJobs {
+
+    public ArrayList<Job> listarJobs() {
+        ArrayList<Job> lista = new ArrayList<>();
+
+        String sql = "SELECT job_id, job_title, min_salary, max_salary FROM jobs";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                Job job = new Job();
+                job.setJobId(rs.getString("job_id"));
+                job.setJobTitle(rs.getString("job_title"));
+                job.setMinSalary(rs.getBigDecimal("min_salary"));
+                job.setMaxSalary(rs.getBigDecimal("max_salary"));
+                lista.add(job);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
+
+    public Job obtenerJobPorId(String jobId) {
+        Job job = null;
+
+        String sql = "SELECT job_id, job_title, min_salary, max_salary FROM jobs WHERE job_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, jobId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    job = new Job();
+                    job.setJobId(rs.getString("job_id"));
+                    job.setJobTitle(rs.getString("job_title"));
+                    job.setMinSalary(rs.getBigDecimal("min_salary"));
+                    job.setMaxSalary(rs.getBigDecimal("max_salary"));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return job;
+    }
+
+    public void crearJob(Job job) {
+        String sql = "INSERT INTO jobs(job_id, job_title, min_salary, max_salary) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, job.getJobId());
+            pstmt.setString(2, job.getJobTitle());
+            pstmt.setBigDecimal(3, job.getMinSalary());
+            pstmt.setBigDecimal(4, job.getMaxSalary());
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
