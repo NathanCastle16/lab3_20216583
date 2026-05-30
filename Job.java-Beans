@@ -1,0 +1,13 @@
+package com.example.lab6.beans;
+
+import java.math.BigDecimal;
+
+public class Job {
+
+    private String jobId;
+    private String jobTitle;
+    private BigDecimal minSalary;
+    private BigDecimal maxSalary;
+
+    // getters y setters
+}
