@@ -1,0 +1,13 @@
+public void borrarEmployee(int id) {
+    String sql = "DELETE FROM employees WHERE employee_id = ?";
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, id);
+        pstmt.executeUpdate();
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
