@@ -1,0 +1,39 @@
+public void actualizarEmployee(Employee emp) {
+    String[] nombres = separarNombre(emp.getFullNameEmployee());
+
+    String sql = """
+        UPDATE employees
+        SET first_name = ?,
+            last_name = ?,
+            email = ?,
+            phone_number = ?,
+            hire_date = ?,
+            job_id = ?,
+            salary = ?,
+            commission_pct = ?,
+            manager_id = ?,
+            department_id = ?
+        WHERE employee_id = ?
+    """;
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setString(1, nombres[0]);
+        pstmt.setString(2, nombres[1]);
+        pstmt.setString(3, emp.getEmail());
+        pstmt.setString(4, emp.getPhoneNumber());
+        pstmt.setDate(5, Date.valueOf(emp.getHireDate()));
+        pstmt.setString(6, emp.getJobId());
+        pstmt.setBigDecimal(7, emp.getSalary());
+        pstmt.setBigDecimal(8, emp.getCommissionPct());
+        pstmt.setObject(9, emp.getManagerId());
+        pstmt.setObject(10, emp.getDepartmentId());
+        pstmt.setInt(11, emp.getEmployeeId());
+
+        pstmt.executeUpdate();
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
