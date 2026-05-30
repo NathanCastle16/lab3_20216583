@@ -1,0 +1,49 @@
+public ArrayList<Employee> listarEmployees() {
+    ArrayList<Employee> lista = new ArrayList<>();
+
+    String sql = """
+        SELECT 
+            e.employee_id,
+            CONCAT(e.first_name, ' ', e.last_name) AS full_name,
+            e.email,
+            e.phone_number,
+            e.hire_date,
+            e.job_id,
+            j.job_title,
+            e.salary,
+            e.commission_pct,
+            e.manager_id,
+            e.department_id
+        FROM employees e
+        INNER JOIN jobs j ON e.job_id = j.job_id
+        ORDER BY e.employee_id
+    """;
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql);
+         ResultSet rs = pstmt.executeQuery()) {
+
+        while (rs.next()) {
+            Employee emp = new Employee();
+
+            emp.setEmployeeId(rs.getInt("employee_id"));
+            emp.setFullNameEmployee(rs.getString("full_name"));
+            emp.setEmail(rs.getString("email"));
+            emp.setPhoneNumber(rs.getString("phone_number"));
+            emp.setHireDate(rs.getDate("hire_date").toLocalDate());
+            emp.setJobId(rs.getString("job_id"));
+            emp.setJobTitle(rs.getString("job_title"));
+            emp.setSalary(rs.getBigDecimal("salary"));
+            emp.setCommissionPct(rs.getBigDecimal("commission_pct"));
+            emp.setManagerId((Integer) rs.getObject("manager_id"));
+            emp.setDepartmentId((Integer) rs.getObject("department_id"));
+
+            lista.add(emp);
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return lista;
+}
